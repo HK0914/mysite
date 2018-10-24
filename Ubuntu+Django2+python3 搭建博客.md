@@ -1,4 +1,4 @@
-#  Ubuntu + Django2.1.2 +Python3搭建博客
+# Ubuntu + Django2.1.2 +Python3搭建博客
 
 参考书籍：跟老齐Python Django 实战，为什么选这本书，因为在沙河校图书馆里压根就没什么相关书
 
@@ -260,4 +260,102 @@ sudo apt-get install sqlitebrowser
 
 #### 1.2.2 发布博客文章
 
-先用最简单的方式实现博客文章的发布。
+先用最简单的方式实现博客文章的发布,使用Django默认的管理功能就可以发布文章。要使用此功能，必须先创建超级管理员。要牢记所使用的用户名和密码。密码设置要有一定的复杂度，我的是英文字母加数字，至少8位。
+
+```
+mysite$ python manage.py createsuperuser
+Username(leave blank to use 'qiwsir'): kun
+Email address: hk19930914@163.com
+Password:*********
+Password(again):*********
+Superuser created successfull
+```
+
+运行服务器  `mysite$ python manage.py runserver`
+
+浏览器地址栏输入 http://127.0.0.1:8000/admin/或者http://localhost:8000/admin/, 然后输入刚才创建超级管理员的用户名和密码，就可以进入Django administration页面。 用户(Users)和组(Groups)是Django在用户管理应用中默认的，单击User会看到当前项目仅有的一个用户kun，当然也可以增加用户。
+
+打开./blog/admin.py文件，用编辑工具打开，输入以下代码：
+
+```python
+from django.contrib import admin
+from .models import BlogArticles  #1  将BlogArticles类引入当前环境
+
+admin.site.register(BlogArticles) #2  将该类注册到admin中
+
+```
+
+刷新浏览器页面，看到新注册的BLOG。
+
+单击Blog articless 右侧的Add按钮就可以添加博客文章。内容填写之后，点击保存，该博客文章被保存到数据库中，可以使用DB Browser for SQLite查看数据库。
+
+在./blog/models.py中使用了django.utils.timezone,所以要安装一个pytz模块，用它来提供时区。
+
+`$ sudo pip3 install pytz`
+
+安装完毕，重启服务。
+
+在文章列表页，可以看到所有已经发布的文章标题。由于显示的列表信息太单一，为了使列表页的信息更加丰富，继续用编辑./blog/admin.py 文件。
+
+```python
+from django.contrib import admin
+from .models import BlogArticles
+
+class BlogArticlesAdmin(admin.ModelAdmin):
+       list_display = ("title",  "author",  "publish")
+       list_filter = ("publish",  "author")
+       search_fields = ('title',  "body")
+       raw_id_fields = ("author",)
+       date_hierarchy = "publish"
+       ordering = ['publish',  'author']
+
+
+admin.site.register(BlogArticles, BlogArticlesAdmin)
+```
+
+保存，刷新浏览器页面，即可看到效果。
+
+
+
+#### 1.2.3 知识点
+
+##### 1. HTTP
+
+Hyper Text Transfer Protocol( 超文本传输协议 )，是客户端( 浏览器、网页爬虫程序 )和服务器端( 网站 )请求和应答的标准(TCP)，封装了Web服务的整个过程，默认端口80。
+
+- 请求 (request): 客户端到服务器端
+- 响应 (response): 服务器端到客户端。状态信息（HTTP/1.1 200) 和内容信息。
+
+HTTP/1.1 协议共定义了8种请求方式：OPTIONS、HEAD、GET、POST、 PUT、DELETE、TRACE 和 CONNECT.
+
+本项目中主要使用GET和POST请求
+
+- GET：向指定服务器发出请求，主要用于读取信息并显示
+- POST： 向指定服务器提交数据，请求服务器进行处理（例如提交表单或者上传文件）
+
+HTTPS — Hyper Text Transfer Protocol Secure,默认端口443，安全性更高，HTTP以明文方式封装信息，HTTPS以加密方式传送信息。
+
+##### 2. URL
+
+Uniform/Universal Resource Locator  统一资源定位符，俗称网址。
+
+URL标准格式：协议类型://服务器地址(必要时需加上端口号)/路径/文件名
+
+- 协议类型：HTTP/HTTPSu
+- 服务器地址： 通常是域名，比如baidu.com,也可以是IP地址，如果默认是80端口，可以不写，否则需要写上端口。
+- 路径：以"/"区别目录，对于GET请求方式，可以用“？”发起参数，每个参数以“&”隔开，再以“=”分开参数名称和值。
+- 文件名：有必要可写
+
+##### 3. 模型： ORM
+
+动态网站，大多数是通过数据库实现对数据的保存和读取，所以数据库是网站最基本最底层的组成部分。
+
+Django不需要开发者使用SQL语句实现程序和数据库的交互，而是通过ORM，即Object-Relational Mapping（对象关系映射）。
+
+ORM的作用是在关系型数据库和业务实体对象之间进行映射，，只需简单地操作对象的属性和方法。
+
+Django的数据模型层大量使用ORM,表现方式就是编写数据模型类，这些类可以写到任何文件中，通常写在每个应用的models.py文件中，每个数据模型类都是django.db.models.Model的子类。应用的名称（小写字母）和数据模型类的名称（小写字母）共同组成一个数据库表的名称（"appname"_"modelname",例如blog_blogarticles).
+
+当数据模型类写好之后，通过执行Django的数据迁移操作（`python manage.py makemigrations`, `python manage.py migrate`)就能够创建相应的数据库表，用来保存网站项目的数据。以后要更改数据库表的结构，只需要更改数据模型类，迁移数据就能实现数据库结构的调整。
+
+若想改为MySQL数据库,只需要在settings.py文件中做好新数据库的配置，然后进行迁移数据的操作即可完成数据库的迁移，不需要对ORM进行任何修改。
