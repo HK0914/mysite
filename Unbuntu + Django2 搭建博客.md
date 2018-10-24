@@ -1,0 +1,263 @@
+#  Ubuntu + Django2.1.2 +Python3搭建博客
+
+参考书籍：跟老齐Python Django 实战，为什么选这本书，因为在沙河校图书馆里压根就没什么相关书
+
+## 1、简单博客系统
+
+默认在ubuntu系统里已装好Python3,需要会Python最基础的语法，可以从廖雪峰，简明Python,以及codecademy上学习，另外最近我在win10系统上学习Java,学这个的时候Python也几个月没碰了，遇到不会的就百度，学Java是为了找工作，学这个纯粹是兴趣爱好。
+
+### 1.1 Django 入门
+
+#### 1.1.1 Django
+
+django -网站的开发框架
+
+#### 1.1.2 安装Django(Python3)
+
+打开终端 `$ pip3 install Django == 2.1.2`
+
+#### 1.1.3 创建项目（project)
+
+“项目”，可以理解为一个网站
+
+首先，创建一个目录mysite（文件夹），将项目创建在这个mysite里
+
+打开终端
+
+ $ sudo install python-django-common
+
+$ sudo apt-get install python - django
+
+然后在这个mysite目录下（空白），右键，选择Open in Terminal
+
+`~/mysite$  django-admin startproject mysite`  ---创建一个django项目，多了一个mysite子目录，mysite是这个项目名称，这时已经有了一个网站的基本框架了。
+
+创建项目时用到的 django-admin.py，它是Django 的任务管理命令行工具
+
+在有manage.py这个文件的目录下打开终端`$ python manage.py runserver`
+
+若一切正常，可以看到提示信息：
+
+Starting development server at http://127.0.0.1:8000/  ——启动服务
+Quit the server with CONTROL-C.             ——control+c 结束当前服务
+
+打开浏览器，输入http://12.0.1:8000或者http://localhost:8000  ,会看到Django网页
+
+#### 1.1.4 创建应用(application)
+
+网站的具体功能
+
+进入到刚才创建的项目目录中，即manage.py文件所在的目录
+
+`~/mysite$  python manage.py startapp blog`    ——在项目mysite中新建了一个blog应用。
+
+
+
+对项目结构各个部分简介
+
+##### 1.   manage.py 
+
+在创建一个Django项目后，manage.py 被自动生成在项目的根目录中，它是对django-admin.py的简单封装，同样能够实现命令行操作，不要修改和删除它。
+
+##### 2. mysite
+
+所建项目的管理功能目录，它里面的文件常用于整个项目进行参数配置
+
+`settings.py` : 包含项目的初始化设置，可以针对整个项目进行有关参数配置，比如配置数据库、添加应用等。
+
+`urls.py`: URL配置表文件，主要将URL映射到应用程序上。当用户请求某个URL时，Django项目会根据这个文件中的映射关系指向某个目标对象（某个应用的urls.py文件或某个具体的视图函数）。这个文件也被称为URLconf.
+
+`wsgi.py` : （Web Server Gateway Interface),是Python所选择的服务器和应用标准。
+
+`__pychache__`: 执行python manage.py runserver命令后出现，时一个编译后的文件夹，里面文件都是以.pyc结尾的文件。
+
+##### 3. blog
+
+项目中创建的应用之一，每创建一个新的应用，Django就会在项目根目录中( ./)中创建一个子目录，目录中会有一些默认的文件。
+
+`admin.py` :  可以自定义Django管理工具。
+
+`apps.py` : 包含对应用的配置
+
+`migrations`: 这是一个目录，用于存储应用的数据库表结构的指令，通过这些指令可以修改和创建数据库，从而在models.py模型类和数据库表之间的迁移。
+
+`models.py` : 应用的数据模型，每个Django应用都应当有一个models.py文件，可以为空。
+
+`tests.py`：在这个文件中编写测试文档来测试所建立的应用。
+
+`views.py`: 用户保存响应各种请求的函数和类。 如果编写的是函数，则称之为基于函数的视图；如果编写的是类，则称之为基于类的视图。保存函数或者类的视图文件。
+
+
+
+##### 4. db.sqlite3
+
+默认的数据库SQLite
+
+
+
+#### 1.1.5  网站的配置
+
+将应用注册到项目中
+
+在Django项目中，主管信息注册（对本项目进行各种信息声明）的文件时./mysite/settings.py。
+
+**DEBUG**： True or False, 开发过程中，设置成True,在测试功能时，Django能够显示详细的报错信息——“开发模式”。如果将项目部署到真正要对外发布的服务器上——“生产环境”，必须将其值修改为False,从而避免暴露项目的内部信息。
+
+**ALLOWED_HOSTS**:  在DEBUG设置为True时，其值可以为空。当部署到生产环境中时，要把主域名填写到这里，才能通过域名访问到本网站。
+
+**INSTALLED_APPS**： 所有的应用写到这里才能生效。
+
+INSTALLED_APPS = [
+​    'django.contrib.admin',          # 针对项目后台管理的应用。
+​    'django.contrib.auth',
+​    'django.contrib.contenttypes',
+​    'django.contrib.sessions',
+​    'django.contrib.messages',  
+​    'django.contrib.staticfiles',
+​    'blog',                   #新增加的，所建立项目的名称，其他项Django默认具有的应用。
+]
+
+**DATABASES**: 配置数据库，默认配置SQLite,小巧灵活，Python标准库所支持。
+
+**LANGUAGE_CODE**:设置项目的语言，汉语，设置为   LANGUAGE_CODE = 'zh-hans'
+
+TIME_ZONE: 设置时区，东八区， TIME_ZONE = 'Asia/Shanghai'
+
+
+
+#### 1.1.6 知识点
+
+##### 1. 开发模式
+
+是相对于“生产模式”而言的，即系统尚处于开发阶段，还没正式对外部客户提供服务，在Django开发模式中，不需要配置Apache或者Nginx等服务器，也能够运行网站，这是因为Django本身就提供了简单的Web服务器功能，但是这仅限于开发过程，当网站被正式部署后，即转换为“生产模式”时，就需要对部分配置进行修改。
+
+在开发模式中，Django会自动检测到修改代码并重新加载，不需要每次修改代码后重新启动Web服务器。只有在新增加文件后，才需要重启Django服务。
+
+运行Django服务的指令是： `python manage.py runserver`
+
+##### 2. 项目和应用
+
+Django安装好之后，就有了django-admin这个默认命令，可以用`django-admin starproject projectname`命令创建一个Django项目。
+
+项目是由若干个“应用”(app)组成的，实现具体的功能。创建应用可以用 `python manage.py startapp appname`命令。也可以使用 `django-admin startapp appname`命令。
+
+创建项目和应用后，会生成一些默认的文件，要么是一些默认的配置，要么是一些空文件为了占据位置。
+
+每个应用都要在项目的settings.py文件的INSTALLED_APPS中进行声明，告诉Django这个应用是本项目的一部分。	
+
+### 1.2  编写博客的数据模型类
+
+设计数据库和表结构是做网站的基础。在Django中，不需要通过SQL语句直接跟数据库打交道，而是完全用	python的方式创建数据库，之后交给Django完成数据库的操作。
+
+#### 1.2.1 数据模型类
+
+利用Django开发网站系统，一般情况下，要先编写数据模型，就是在./blog/models.py中写一个类，这个类与数据库中的数据表具有对应关系。
+
+在./blog/models.py中编写博客的数据模型类 Blog, 它本质上是一个继承了django.db.models.Models的类。
+
+```python
+from django.db import models
+from django.utils import timezone
+from django.contrib.auth.models import User
+
+
+class BlogArticles(models.Model):
+    title = models.CharField(max_length=300)  #1
+    author = models.ForeignKey(User,
+related_name="blog_posts",on_delete=models.CASCADE,) #2
+    body = models.TextField()
+    publish = models.DateTimeField(default=timezone.now)
+    
+
+    class Meta: #3
+        ordering = ("-publish",)
+
+  
+    def __str__(self):
+        return self.title
+```
+
+这个BlogArticles类中定义了一些属性，每个属性对应着将来数据库表中的一个字段。，以后将属性称之为字段。
+
+ #1  字段title的属性为CharFiled()类型，参数说字 段的最大数量.
+
+#2   通过字段author规定了博客和用户之间的关系——一个用户对应多篇文章。ForeignKey() 就反映了这种“一对多”关系。类User就是BlogArticles的对应对象，related_name="blog_posts"的作用是允许通过类User反向查询到BlogArticles.
+
+#3  通过 ordering = ("-publish",)，规定了BlogArticles实例对象的显示顺序，即按照publish字段值的倒序显示。
+
+
+
+BlogArticles 类的数据模型编写好了，将来数据库表的基本结构就是按照上述各字段及其属性而定的。
+
+
+
+**接下来根据数据模型建立数据库表：**
+
+在/mysite/manage.py 位置执行 `~/mysite$ python manage.py makemigrations`,会有Migrations for blog : ...的提示信息，意思就是在blog/migrations目录中创建了一个BlogArticles模型，打开这个001_initial.py文件看一下。
+
+```python
+# Generated by Django 2.1.2 on 2018-10-13 12:21
+
+from django.conf import settings
+from django.db import migrations, models
+import django.db.models.deletion
+import django.utils.timezone
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='BlogArticles',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=300)),
+                ('body', models.TextField()),
+                ('publish', models.DateTimeField(default=django.utils.timezone.now)),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blog_posts', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'ordering': ('-publish',),
+            },
+        ),
+    ]
+```
+
+这个文件是执行`python manage.py makemigrations`命令后，django自动生成的。这个文件的功能是创建一个名称为BlogArticles的数据库表。这个表的名称由两部分组成，第一部分是blog本应用的名称，第二部分是blogaricles(都小写)是在models.py中创建的数据模型类的名称，中间用单下划线连接。
+
+创建了一个能够建立数据库表的文件，就可以真正创建数据库了。
+
+`~/mysite$  python manage.py migrate`
+
+本项目使用SQLite数据库，并且在settings.py中规定了数据库文件存放在项目根目录中
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+```
+
+对于db.sqlite3这个文件，可以在FireFox浏览器中安装SQLite Manager 插件来查看。 由于我的火狐浏览器插件不兼容，两种办法：1、直接在Ubuntu Software 搜索 sqlite  ,安装DB Browser for SQLite； 2是通过打开终端输入命令：
+
+```
+sudo apt-get install sqlite3
+sqlite -version
+sudo apt-get install sqlitebrowser
+```
+
+ 
+
+综上，博客的数据库就建立好了。
+
+#### 1.2.2 发布博客文章
+
+先用最简单的方式实现博客文章的发布。

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}blog titles{% endblock %}
+
+{% block content %}
+<div class="row text-center vertical-middle-sm">
+    <h1>我的博客</h1>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-md-8">
+    <ul>
+    {% for blog in blogs %}
+        <li><a href="{{ blog.id }}">{{ blog.title }}</a></li>
+    {% endfor %}
+    </ul>
+    </div>
+    <div class="col-xs-6 col-md-4">
+    <h2>主页</h2>
+    <p>要转行的材料小白kun: www.m2it.com</p>
+    <img width="300px" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539540158465&di=782ca9365c7d07bcc304c3ef9cff3e56&imgtype=0&src=http%3A%2F%2Fimg2.ph.126.net%2F19wlquAHelW1YtaQz3YP5w%3D%3D%2F6619415141467524872.jpg">
+    </div>
+</div>
+{% endblock %}
